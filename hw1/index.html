@@ -87,43 +87,40 @@
 
     <section id="task1">
         <h2>Task 1: Triangle Rasterization</h2>
-        <h3>Bounding Box</h3>
-        <section id="task1">
-            <h2>Task 1: Triangle Rasterization</h2>
-            <h3>Bounding Box Method</h3>
-            <p>
-                Initially, we implemented the Basic Bounding Box method. For a given triangle, we determine the minimum
-                and
-                maximum x and y coordinates to identify the bounding box. This box encompasses all potential pixels for
-                rasterization. We then iterate over each pixel within this box, employing line equations to ascertain
-                whether a
-                pixel lies within the triangle. Pixels inside the triangle are subsequently colored.
-            </p>
-            <p>
-                To prevent the bounding box from extending beyond the display area, we clamp its coordinates to the
-                dimensions
-                of the screen. Moreover, we optimize memory usage by reversing the order of iteration in our loops,
-                thereby
-                enhancing cache efficiency.
-            </p>
-            <h3>Scanline Algorithm</h3>
-            <p>
-                Following the bounding box method, we adopted the Scanline algorithm, which begins by sorting the
-                triangle's
-                vertices based on their y coordinates. This algorithm divides the triangle into an upper and a lower
-                section.
-                For each section, we calculate where the horizontal scanlines intersect the triangle's edges and fill in
-                the
-                pixels spanning these intersections.
-            </p>
-            <p>
-                The Scanline algorithm is notably more efficient than its bounding box counterpart, as it only processes
-                pixels
-                within the triangle. However, this efficiency comes at the cost of increased complexity, including the
-                need to
-                sort the vertices.
-            </p>
-        </section>
+        <h3>Bounding Box Method</h3>
+        <p>
+            Initially, we implemented the Basic Bounding Box method. For a given triangle, we determine the minimum
+            and
+            maximum x and y coordinates to identify the bounding box. This box encompasses all potential pixels for
+            rasterization. We then iterate over each pixel within this box, employing line equations to ascertain
+            whether a
+            pixel lies within the triangle. Pixels inside the triangle are subsequently colored.
+        </p>
+        <p>
+            To prevent the bounding box from extending beyond the display area, we clamp its coordinates to the
+            dimensions
+            of the screen. Moreover, we optimize memory usage by reversing the order of iteration in our loops,
+            thereby
+            enhancing cache efficiency.
+        </p>
+        <h3>Scanline Algorithm</h3>
+        <p>
+            Following the bounding box method, we adopted the Scanline algorithm, which begins by sorting the
+            triangle's
+            vertices based on their y coordinates. This algorithm divides the triangle into an upper and a lower
+            section.
+            For each section, we calculate where the horizontal scanlines intersect the triangle's edges and fill in
+            the
+            pixels spanning these intersections.
+        </p>
+        <p>
+            The Scanline algorithm is notably more efficient than its bounding box counterpart, as it only processes
+            pixels
+            within the triangle. However, this efficiency comes at the cost of increased complexity, including the
+            need to
+            sort the vertices.
+        </p>
+
 
         <img src="./imgs/task1_2.png" alt="Task 1 Screenshot" style="width: 500px;">
 
@@ -188,10 +185,11 @@
                 <td>0.08602</td>
             </tr>
         </table>
-        The Scanline algorithm generally outperforms the Basic Bounding Box approach in terms of speed. However,
-        optimizing
-        the Bounding Box by swapping loops does not yield a significant performance improvement, possibly due to the
-        relatively small size of the dataset.
+        <p>
+            The Scanline algorithm generally outperforms the Basic Bounding Box approach in terms of speed. However,
+            optimizing
+            the Bounding Box by swapping loops does not yield a significant performance improvement, possibly due to the
+            relatively small size of the dataset.
         </p>
         <!-- <img src="path/to/task1_screenshot.png" alt="Task 1 Screenshot"> -->
     </section>
