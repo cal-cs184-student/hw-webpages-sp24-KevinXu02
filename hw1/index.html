@@ -1,7 +1,292 @@
+<!DOCTYPE html>
 <html>
-	<head>
-	</head>
-	<body>
-		Homework 1 index.html here
-	</body>
+
+<head>
+    <title>CS184 Homework 1</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+
+</head>
+
+<body>
+    <header>
+        <h1>CS184 Homework 1</h1>
+    </header>
+
+    <section id="task1">
+        <h2>Task 1: Triangle Rasterization</h2>
+        <h3>Bounding Box</h3>
+        <p>
+            We first implimented the Basic Bounding Box. Given the vertices of the triangle, we first finds the minimum
+            and maximum x and y coordinates of the triangle. Then we iterate through the bounding box and check if the
+            point is inside the triangle using three line tests. If the point is inside the triangle, we color the
+            pixel.
+        </p>
+        <p>
+
+            We ensure that the bounding box is inside the screen by clamping the coordinates to the screen size. And we
+            swap the two for loops to make sure the cache is used efficiently.
+        </p>
+        <h3>Scanline</h3>
+        <p>
+            We then implemented the Scanline algorithm. We sort the vertices of the triangle by their y coordinates. We
+            render the triangle into 2 parts, the upper part and the lower part. For each part, we find the intersection
+            of the scanline with the edges of the triangle. We then fill the pixels between the intersections.
+        </p>
+        <p>
+            This algorithm is more efficient than the bounding box algorithm because it only needs to iterate through
+            the pixels that are inside the triangle. However, it is more complex and requires sorting the vertices.
+        </p>
+        <img src="./imgs/task1_2.png" alt="Task 1 Screenshot" style="width: 500px;">
+
+
+        <h3>Rendering Times Comparison</h3>
+        <p>
+            Debug build, repeat 10 times:
+        </p>
+        <table>
+            <tr>
+                <th>Test Case</th>
+                <th>Basic Bounding Box (s)</th>
+                <th>Swap X,Y Basic Bounding Box (s)</th>
+                <th>Scanline (s)</th>
+            </tr>
+            <tr>
+                <td>Basic 1</td>
+                <td>0.011928</td>
+                <td>0.012152</td>
+                <td>0.006026</td>
+            </tr>
+            <tr>
+                <td>Basic 2</td>
+                <td>0.044396</td>
+                <td>0.04534</td>
+                <td>0.044267</td>
+            </tr>
+            <tr>
+                <td>Basic 3</td>
+                <td>0.013392</td>
+                <td>0.013052</td>
+                <td>0.01282</td>
+            </tr>
+            <tr>
+                <td>Basic 4</td>
+                <td>0.003251</td>
+                <td>0.0032</td>
+                <td>0.001767</td>
+            </tr>
+            <tr>
+                <td>Basic 5</td>
+                <td>0.00134</td>
+                <td>0.0013</td>
+                <td>0.001341</td>
+            </tr>
+            <tr>
+                <td>Basic 6</td>
+                <td>0.006447</td>
+                <td>0.006631</td>
+                <td>0.003268</td>
+            </tr>
+            <tr>
+                <td>Basic 7</td>
+                <td>0.085573</td>
+                <td>0.084135</td>
+                <td>0.046709</td>
+            </tr>
+            <tr>
+                <td>Basic 8</td>
+                <td>0.084978</td>
+                <td>0.085336</td>
+                <td>0.08602</td>
+            </tr>
+        </table>
+        The scanline algorithm is faster than the basic bounding box algorithm in most cases. However,
+        the basic bounding box algorithm is not getting faster when we swap the two for loops. This is might because the
+        data size is too small to see the difference.
+        </p>
+        <!-- <img src="path/to/task1_screenshot.png" alt="Task 1 Screenshot"> -->
+    </section>
+
+    <section id="task2">
+        <h2>Task 2: Supersampling</h2>
+        <p>
+            By rendering the scene at a higher resolution and then averaging these samples for each final pixel,
+            supersampling
+            effectively smooths out jagged lines and improves image fidelity.
+        </p>
+        <p>
+            The mainly used data structure in this task is the 2d
+            array sample_buffer.
+            We expand the sample_buffer width and height by the square supersampling rate. And we project the triangle
+            to the
+            super sampled space(x->x*sqr_ss_rate, y->y*sqr_ss_rate). Then we iterate through the bounding box of the
+            triangle and fill the sample_buffer with the color of the triangle in the same way as task 1.
+        </p>
+        <p>
+            After we fill the sample_buffer, we iterate through the sample_buffer and resolve the color of the pixel to
+            the
+            screen with the average color of the samples in the sample_buffer.
+        </p>
+        modified function:
+        <ul>
+
+            <li><span class="function-name">set_sample_rate:</span> <span class="description">It now resizes the
+                    sample_buffer
+                    to width
+                    * height * rate.</span></li>
+            <li><span class="function-name">resolve_to_framebuffer:</span> <span class="description">Iterates through
+                    the pixels
+                    in the sqr_ss_rate * sqr_ss_rate area, calculates the average color of the samples, and applies it
+                    to the
+                    rgb_framebuffer_target.</span></li>
+            <li><span class="function-name">rasterize_triangle:</span> <span class="description">Projects the triangle
+                    to the
+                    super sampled space and fills the sample_buffer with the triangle's color.</span></li>
+        </ul>
+
+        <div style="display:flex;justify-content:center;">
+            <img src="./imgs/task2_1.png" alt="Task 2 Screenshot" style="width:250px;">
+            <img src="./imgs/task2_2.png" alt="Task 2 Screenshot" style="width:250px;">
+            <img src="./imgs/task2_3.png" alt="Task 2 Screenshot" style="width:250px;">
+            <img src="./imgs/task2_4.png" alt="Task 2 Screenshot" style="width:250px;">
+        </div>
+        <p>
+            We can see that on the skinny edges of the triangle, the super sampled image is smoother than the original.
+            The pixels become more transparent as the supersampling rate increases. This is because the color of the
+            pixel is the average of the samples, for those pixels that are not fully covered by the triangle, the color
+            is averaged with the background color. And more likely to be transparent if it only covers a small part of
+            the pixel.
+        </p>
+
+    </section>
+    <section id="task3">
+        <h2>Task 3: Cubeman Animation</h2>
+        <p>We created a robot staning on one feet. This was created by rotate the lower part of left feet. And
+            both arms are rotated and moved to looks like it was tring to keep its balance. Also, the head is rotated to
+            look down.</p>
+        </p>
+        <img src="./imgs/task3.png" alt="Task 3 Screenshot" style="width: 500px;">
+        <!-- <img src="path/to/task3_screenshot.png" alt="Task 3 Screenshot"> -->
+    </section>
+
+    <section id="task4">
+        <h2>Task 4: Barycentric Coordinates</h2>
+        <p>Barycentric coordinates offer a way to express locations within a triangle based on the triangle's vertices.
+            It tell us how much of each element from the corners is present at any point inside
+            this triangle. With barycentric interpolation, we can interpolated every point inside the
+            triangle with the
+            color of three vertices smoothly.</p>
+        <p>
+            At any point within the triangle, the color you see is a mix of the colors at the vertices, with the mix
+            proportions
+            determined by the point's relative position to each vertex. Closer proximity to a vertex means more
+            influence from that
+            vertex's color.
+        </p>
+        <div style="display:flex;justify-content:center;">
+            <img src="./imgs/task4.png" alt="Task 4 Screenshot">
+            <img src="./imgs/task4_2.png" alt="Task 4 Screenshot">
+        </div>
+    </section>
+
+    <section id="task5">
+        <h2>Pixel Sampling</h2>
+        <p>Pixel sampling is a technique used to determine the color of pixels in the scene. Every point in the scene
+            is cooresponing to one point in the uv space. Since the uv texture is discreate. Pixel sampling methods
+            determines
+            how we sample from the uv texture.</p>
+        <p>We first needs to determine the uv coordinates of the point, this is done by barycentric interpolation on the
+            uv coordinates of the vertices of the triangle. Then we turn the uv coordinates into the texture space
+            coordinates to sample the color from the
+            uv texture. </p>
+        <p>The nearest sampling simply takes the color of the nearest
+            pixel in the uv texture. This method is fast but can cause aliasing. The other method is bilinear sampling,
+            which takes the linear interpolation of the four nearest pixels in the uv texture.</p>
+        <div style="display:flex;justify-content:center;">
+            <img src="./imgs/51.png" alt="Task 2 Screenshot" style="width:600px;">
+            <img src="./imgs/52.png" alt="Task 2 Screenshot" style="width:600px;">
+        </div>
+        <div style="display:flex;justify-content:center;">
+            <img src="./imgs/53.png" alt="Task 2 Screenshot" style="width:600px;">
+            <img src="./imgs/54.png" alt="Task 2 Screenshot" style="width:600px;">
+        </div>
+        <p>The left two are nearest sampling and the right two are bilinear sampling.And the first row is the 1x sample
+            and the second row is the 16x sample.
+        </p>
+        <p>
+            We can see that the bilinear
+            sampling is smoother than the nearest sampling in 1x sample. The nearest sampling has more aliasing. This is
+            because for the thin lines in the texture, the nearest sampling can only take the color of the nearest
+            pixel, which can cause the aliasing since it is likely to sample a pixel isn't on the line. The bilinear
+            sampling can take the linear interpolation of the four
+            nearest pixels, which can smooth out the texture and represent the line correctly.
+        </p>
+        <p>
+            There is no significant
+            difference between the two sampling methods in 16x sample. This is because the texture is already smooth
+            enough with so many samples and the difference between the two sampling methods is not significant.
+        </p>
+
+    </section>
+
+    <section id="task6">
+        <h2>Task 6: Level Sampling</h2>
+        <p>Level sampling, often associated with Mipmapping in the context of texture mapping, can
+            improve the quality of texture mapping by using different levels of detail for different
+            distances from the camera. This can help to reduce aliasing as it can use a lower resolution
+            texture for far away objects, and a higher resolution texture for close objects.
+        </p>
+
+        <h3>Speed</h3>
+        <p>
+            For the two pixel sampling methods, the speed of the nearest sampling is faster than the bilinear sampling
+            for about 15%.This is because the nearest sampling only needs to take the color of the nearest pixel, while
+            the bilinear
+            sampling needs to take the linear interpolation of the four nearest pixels.
+        </p>
+        <p>
+            For level sampling, L_ZERO is faster than L_NEAREST for about 10% and 20% than L_LINEAR for my
+            implimentation. This is because
+            L_NEAREST needs to round to the nearest level, while L_LINEAR needs to take the linear interpolation of the
+            two nearest levels.
+        </p>
+        <p>
+
+            The number of samples per pixel has a huge impact on speed. The speed is significantly reduced when the
+            number
+            of samples per pixel increases. This is because the number of samples per pixel directly affects the number
+            of
+            times we need to sample from the texture. The rendering time is almost linear to the number of samples per
+            pixel.
+        </p>
+        <h3>Memory Usage</h3>
+        <p>Pixel sampling techniques and do not significantly differ in memory usage. Level sampling requires
+            additional memory for mipmaps. While the number of samples per pixel has a direct impact on memory usage,
+            particularly for
+            framebuffer storage.</p>
+
+        <h3>Antialiasing Power</h3>
+        <p>Bilinear sampling provides basic antialiasing by smoothing color transitions. L_NEAREST
+            and L_LINEAR level sampling can provide antialiasing by using different levels of detail. L_LINEAR works
+            slightly better than L_NEAREST in antialiasing in the 2D images.
+            While there is no antialiasing effect for the nearest sampling and L_ZERO level sampling.</p>
+        <p>
+            The number of samples per pixel impact on antialiasing greatly. The more samples per pixel, the
+            smoother the texture and the better the antialiasing effect. But after 4x samples, the difference is not
+            significant.
+        </p>
+
+        <img src="./imgs/0n.png" alt="Task 6 Screenshot">
+        <img src="./imgs/0l.png" alt="Task 6 Screenshot">
+        <img src="./imgs/nn.png" alt="Task 6 Screenshot">
+        <img src="./imgs/nl.png" alt="Task 6 Screenshot">
+        <p>
+            Here are the pictures of my cat.The first to last are combinations of L_ZERO and P_NEAREST, L_ZERO and
+            P_LINEAR, L_NEAREST and P_NEAREST, as well as L_NEAREST and P_LINEAR. You can see a great difference in her
+            fur. L_ZERO and P_NEAREST has no antialiasing effect, while L_ZERO and P_LINEAR looks smoother. L_NEAREST
+            and P_NEAREST messes up the fur, and L_NEAREST and P_LINEAR looks over smooth and blurry.
+        </p>
+    </section>
+
+</body>
+
 </html>
