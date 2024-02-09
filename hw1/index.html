@@ -2,9 +2,82 @@
 <html>
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CS184 Homework 1</title>
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
 
+        header {
+            background-color: #007bff;
+            color: #ffffff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        section {
+            margin: 20px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #007bff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #ddd;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 10px auto;
+        }
+
+        .img-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .img-gallery img {
+            width: calc(25% - 10px);
+        }
+
+        @media screen and (max-width: 600px) {
+            .img-gallery img {
+                width: calc(50% - 10px);
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -143,12 +216,13 @@
                     super sampled space and fills the sample_buffer with the triangle's color.</span></li>
         </ul>
 
-        <div style="display:flex;justify-content:center;">
-            <img src="./imgs/task2_1.png" alt="Task 2 Screenshot" style="width:250px;">
-            <img src="./imgs/task2_2.png" alt="Task 2 Screenshot" style="width:250px;">
-            <img src="./imgs/task2_3.png" alt="Task 2 Screenshot" style="width:250px;">
-            <img src="./imgs/task2_4.png" alt="Task 2 Screenshot" style="width:250px;">
+        <div class="img-row-single">
+            <img src="./imgs/task2_1.png" alt="Task 2 Screenshot">
+            <img src="./imgs/task2_2.png" alt="Task 2 Screenshot">
+            <img src="./imgs/task2_3.png" alt="Task 2 Screenshot">
+            <img src="./imgs/task2_4.png" alt="Task 2 Screenshot">
         </div>
+
         <p>
             We can see that on the skinny edges of the triangle, the super sampled image is smoother than the original.
             The pixels become more transparent as the supersampling rate increases. This is because the color of the
@@ -164,7 +238,9 @@
             both arms are rotated and moved to looks like it was tring to keep its balance. Also, the head is rotated to
             look down.</p>
         </p>
-        <img src="./imgs/task3.png" alt="Task 3 Screenshot" style="width: 500px;">
+        <div class="img-gallery">
+            <img src="./imgs/task3.png" alt="Task 3 Screenshot" style="width: 500px;">
+        </div>
         <!-- <img src="path/to/task3_screenshot.png" alt="Task 3 Screenshot"> -->
     </section>
 
@@ -182,7 +258,7 @@
             influence from that
             vertex's color.
         </p>
-        <div style="display:flex;justify-content:center;">
+        <div class="img-gallery">
             <img src="./imgs/task4.png" alt="Task 4 Screenshot">
             <img src="./imgs/task4_2.png" alt="Task 4 Screenshot">
         </div>
@@ -201,14 +277,15 @@
         <p>The nearest sampling simply takes the color of the nearest
             pixel in the uv texture. This method is fast but can cause aliasing. The other method is bilinear sampling,
             which takes the linear interpolation of the four nearest pixels in the uv texture.</p>
-        <div style="display:flex;justify-content:center;">
-            <img src="./imgs/51.png" alt="Task 2 Screenshot" style="width:600px;">
-            <img src="./imgs/52.png" alt="Task 2 Screenshot" style="width:600px;">
+        <div class="img-gallery">
+            <img src="./imgs/51.png" alt="Task 2 Screenshot">
+            <img src="./imgs/52.png" alt="Task 2 Screenshot">
         </div>
-        <div style="display:flex;justify-content:center;">
-            <img src="./imgs/53.png" alt="Task 2 Screenshot" style="width:600px;">
-            <img src="./imgs/54.png" alt="Task 2 Screenshot" style="width:600px;">
+        <div class="img-gallery">
+            <img src="./imgs/53.png" alt="Task 2 Screenshot">
+            <img src="./imgs/54.png" alt="Task 2 Screenshot">
         </div>
+
         <p>The left two are nearest sampling and the right two are bilinear sampling.And the first row is the 1x sample
             and the second row is the 16x sample.
         </p>
@@ -275,13 +352,19 @@
             significant.
         </p>
 
-        <img src="./imgs/0n.png" alt="Task 6 Screenshot">
-        <img src="./imgs/0l.png" alt="Task 6 Screenshot">
-        <img src="./imgs/nn.png" alt="Task 6 Screenshot">
-        <img src="./imgs/nl.png" alt="Task 6 Screenshot">
+        <div class="img-row">
+            <img src="./imgs/0n.png" alt="Task 6 Screenshot">
+            <img src="./imgs/0l.png" alt="Task 6 Screenshot">
+        </div>
+        <div class="img-row">
+            <img src="./imgs/nn.png" alt="Task 6 Screenshot">
+            <img src="./imgs/nl.png" alt="Task 6 Screenshot">
+        </div>
         <p>
-            Here are the pictures of my cat.The first to last are combinations of L_ZERO and P_NEAREST, L_ZERO and
-            P_LINEAR, L_NEAREST and P_NEAREST, as well as L_NEAREST and P_LINEAR. You can see a great difference in her
+            Here are the pictures of my cat. The top-left is L_ZERO and P_NEAREST, top-right is L_ZERO and
+            P_LINEAR, bottom-left is L_NEAREST and P_NEAREST, as well as bottom-right is L_NEAREST and P_LINEAR. You can
+            see a great
+            difference in her
             fur. L_ZERO and P_NEAREST has no antialiasing effect, while L_ZERO and P_LINEAR looks smoother. L_NEAREST
             and P_NEAREST messes up the fur, and L_NEAREST and P_LINEAR looks over smooth and blurry.
         </p>
