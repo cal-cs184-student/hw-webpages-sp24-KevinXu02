@@ -88,27 +88,43 @@
     <section id="task1">
         <h2>Task 1: Triangle Rasterization</h2>
         <h3>Bounding Box</h3>
-        <p>
-            We first implimented the Basic Bounding Box. Given the vertices of the triangle, we first finds the minimum
-            and maximum x and y coordinates of the triangle. Then we iterate through the bounding box and check if the
-            point is inside the triangle using three line tests. If the point is inside the triangle, we color the
-            pixel.
-        </p>
-        <p>
+        <section id="task1">
+            <h2>Task 1: Triangle Rasterization</h2>
+            <h3>Bounding Box Method</h3>
+            <p>
+                Initially, we implemented the Basic Bounding Box method. For a given triangle, we determine the minimum
+                and
+                maximum x and y coordinates to identify the bounding box. This box encompasses all potential pixels for
+                rasterization. We then iterate over each pixel within this box, employing line equations to ascertain
+                whether a
+                pixel lies within the triangle. Pixels inside the triangle are subsequently colored.
+            </p>
+            <p>
+                To prevent the bounding box from extending beyond the display area, we clamp its coordinates to the
+                dimensions
+                of the screen. Moreover, we optimize memory usage by reversing the order of iteration in our loops,
+                thereby
+                enhancing cache efficiency.
+            </p>
+            <h3>Scanline Algorithm</h3>
+            <p>
+                Following the bounding box method, we adopted the Scanline algorithm, which begins by sorting the
+                triangle's
+                vertices based on their y coordinates. This algorithm divides the triangle into an upper and a lower
+                section.
+                For each section, we calculate where the horizontal scanlines intersect the triangle's edges and fill in
+                the
+                pixels spanning these intersections.
+            </p>
+            <p>
+                The Scanline algorithm is notably more efficient than its bounding box counterpart, as it only processes
+                pixels
+                within the triangle. However, this efficiency comes at the cost of increased complexity, including the
+                need to
+                sort the vertices.
+            </p>
+        </section>
 
-            We ensure that the bounding box is inside the screen by clamping the coordinates to the screen size. And we
-            swap the two for loops to make sure the cache is used efficiently.
-        </p>
-        <h3>Scanline</h3>
-        <p>
-            We then implemented the Scanline algorithm. We sort the vertices of the triangle by their y coordinates. We
-            render the triangle into 2 parts, the upper part and the lower part. For each part, we find the intersection
-            of the scanline with the edges of the triangle. We then fill the pixels between the intersections.
-        </p>
-        <p>
-            This algorithm is more efficient than the bounding box algorithm because it only needs to iterate through
-            the pixels that are inside the triangle. However, it is more complex and requires sorting the vertices.
-        </p>
         <img src="./imgs/task1_2.png" alt="Task 1 Screenshot" style="width: 500px;">
 
 
@@ -172,49 +188,52 @@
                 <td>0.08602</td>
             </tr>
         </table>
-        The scanline algorithm is faster than the basic bounding box algorithm in most cases. However,
-        the basic bounding box algorithm is not getting faster when we swap the two for loops. This is might because the
-        data size is too small to see the difference.
+        The Scanline algorithm generally outperforms the Basic Bounding Box approach in terms of speed. However,
+        optimizing
+        the Bounding Box by swapping loops does not yield a significant performance improvement, possibly due to the
+        relatively small size of the dataset.
         </p>
         <!-- <img src="path/to/task1_screenshot.png" alt="Task 1 Screenshot"> -->
     </section>
 
     <section id="task2">
+
         <h2>Task 2: Supersampling</h2>
         <p>
-            By rendering the scene at a higher resolution and then averaging these samples for each final pixel,
-            supersampling
-            effectively smooths out jagged lines and improves image fidelity.
+            Supersampling enhances image quality by rendering the scene at a higher resolution and then averaging
+            these
+            samples for each final pixel, effectively smoothing out jagged edges and improving overall image
+            fidelity.
         </p>
         <p>
-            The mainly used data structure in this task is the 2d
-            array sample_buffer.
-            We expand the sample_buffer width and height by the square supersampling rate. And we project the triangle
-            to the
-            super sampled space(x->x*sqr_ss_rate, y->y*sqr_ss_rate). Then we iterate through the bounding box of the
-            triangle and fill the sample_buffer with the color of the triangle in the same way as task 1.
+            The primary data structure for this task is a 2D array named <code>sample_buffer</code>. We increase the
+            width
+            and height of <code>sample_buffer</code> according to the square of the supersampling rate. The triangle
+            is
+            projected into the supersampled space (scaling x and y coordinates by the supersampling rate). We then
+            iterate
+            through the triangle's bounding box in this space, filling <code>sample_buffer</code> with the
+            triangle's color,
+            similar to the approach in Task 1.
         </p>
         <p>
-            After we fill the sample_buffer, we iterate through the sample_buffer and resolve the color of the pixel to
-            the
-            screen with the average color of the samples in the sample_buffer.
+            Once <code>sample_buffer</code> is populated, we process each pixel by averaging the colors of the
+            supersampled
+            pixels within <code>sample_buffer</code> to determine the final color on the screen.
         </p>
-        modified function:
+        <p>Modified functions:</p>
         <ul>
-
-            <li><span class="function-name">set_sample_rate:</span> <span class="description">It now resizes the
-                    sample_buffer
-                    to width
-                    * height * rate.</span></li>
-            <li><span class="function-name">resolve_to_framebuffer:</span> <span class="description">Iterates through
-                    the pixels
-                    in the sqr_ss_rate * sqr_ss_rate area, calculates the average color of the samples, and applies it
-                    to the
-                    rgb_framebuffer_target.</span></li>
-            <li><span class="function-name">rasterize_triangle:</span> <span class="description">Projects the triangle
-                    to the
-                    super sampled space and fills the sample_buffer with the triangle's color.</span></li>
+            <li><code>set_sample_rate</code>: Adjusts the size of <code>sample_buffer</code> to account for the
+                supersampling rate, effectively resizing to width * height * rate.</li>
+            <li><code>resolve_to_framebuffer</code>: Iterates through the pixels in a supersampled area, computes
+                the
+                average color from the supersampled pixels, and assigns this color to the target framebuffer.</li>
+            <li><code>rasterize_triangle</code>: Projects the triangle into the supersampled space and populates
+                <code>sample_buffer</code> with the color of the triangle.
+            </li>
         </ul>
+
+
 
         <div class="img-row-single">
             <img src="./imgs/task2_1.png" alt="Task 2 Screenshot">
@@ -224,19 +243,25 @@
         </div>
 
         <p>
-            We can see that on the skinny edges of the triangle, the super sampled image is smoother than the original.
-            The pixels become more transparent as the supersampling rate increases. This is because the color of the
-            pixel is the average of the samples, for those pixels that are not fully covered by the triangle, the color
-            is averaged with the background color. And more likely to be transparent if it only covers a small part of
-            the pixel.
+            The supersampled image exhibits noticeably smoother edges, particularly on the slender portions of the
+            triangle,
+            compared to the original. As the supersampling rate increases, pixels on the edges appear more transparent.
+            This
+            transparency effect arises because each pixel's color represents the average of multiple samples. For pixels
+            partially covered by the triangle, their color blends with the background. Consequently, pixels covering
+            only a
+            minor portion of the triangle tend to show increased transparency.
         </p>
+
 
     </section>
     <section id="task3">
         <h2>Task 3: Cubeman Animation</h2>
-        <p>We created a robot staning on one feet. This was created by rotate the lower part of left feet. And
-            both arms are rotated and moved to looks like it was tring to keep its balance. Also, the head is rotated to
-            look down.</p>
+        <p>
+            We designed an animation featuring a robot standing on one foot, achieved by rotating the lower part of its
+            left
+            foot. To simulate the appearance of maintaining balance, both arms were rotated and positioned accordingly.
+            Additionally, the head was tilted downwards to enhance the overall effect of the robot's pose.
         </p>
         <div class="img-gallery">
             <img src="./imgs/task3.png" alt="Task 3 Screenshot" style="width: 500px;">
@@ -246,17 +271,21 @@
 
     <section id="task4">
         <h2>Task 4: Barycentric Coordinates</h2>
-        <p>Barycentric coordinates offer a way to express locations within a triangle based on the triangle's vertices.
-            It tell us how much of each element from the corners is present at any point inside
-            this triangle. With barycentric interpolation, we can interpolated every point inside the
-            triangle with the
-            color of three vertices smoothly.</p>
         <p>
-            At any point within the triangle, the color you see is a mix of the colors at the vertices, with the mix
-            proportions
-            determined by the point's relative position to each vertex. Closer proximity to a vertex means more
-            influence from that
-            vertex's color.
+            Barycentric coordinates provide a method for specifying locations within a triangle relative to its
+            vertices. They
+            reveal the proportion of each vertex's influence at any given point inside the triangle. Utilizing
+            barycentric
+            interpolation, we can smoothly blend the colors of the triangle's vertices across its entire area, achieving
+            a
+            gradient effect.
+        </p>
+        <p>
+            The color observed at any point inside the triangle is a composite of the vertex colors, weighted by the
+            point's
+            proximity to each vertex. Thus, a point's closeness to a particular vertex amplifies the contribution of
+            that
+            vertex's color to the final mix, allowing for a nuanced color transition within the triangle.
         </p>
         <div class="img-gallery">
             <img src="./imgs/task4.png" alt="Task 4 Screenshot">
@@ -266,17 +295,28 @@
 
     <section id="task5">
         <h2>Pixel Sampling</h2>
-        <p>Pixel sampling is a technique used to determine the color of pixels in the scene. Every point in the scene
-            is cooresponing to one point in the uv space. Since the uv texture is discreate. Pixel sampling methods
-            determines
-            how we sample from the uv texture.</p>
-        <p>We first needs to determine the uv coordinates of the point, this is done by barycentric interpolation on the
-            uv coordinates of the vertices of the triangle. Then we turn the uv coordinates into the texture space
-            coordinates to sample the color from the
-            uv texture. </p>
-        <p>The nearest sampling simply takes the color of the nearest
-            pixel in the uv texture. This method is fast but can cause aliasing. The other method is bilinear sampling,
-            which takes the linear interpolation of the four nearest pixels in the uv texture.</p>
+        <p>
+            Pixel sampling is a critical technique for determining pixel colors within a scene. It establishes a
+            correspondence
+            between each scene point and a specific location in UV space. Given the discrete nature of UV textures,
+            pixel
+            sampling techniques dictate the approach for extracting color information from these textures.
+        </p>
+        <p>
+            The process begins with identifying the UV coordinates for a point, achieved through barycentric
+            interpolation based
+            on the UV coordinates of a triangle's vertices. These UV coordinates are then translated into texture space
+            coordinates, which serve as a reference for color sampling from the UV texture.
+        </p>
+        <p>
+            Nearest neighbor sampling selects the color of the closest texture pixel.
+            While fast,
+            this approach may lead to aliasing due to its abrupt color transitions. Alternatively, bilinear sampling,
+            which
+            involves linear interpolation among the four closest texture pixels, offers smoother transitions and can
+            reduce
+            aliasing effects.
+        </p>
         <div class="img-gallery">
             <img src="./imgs/51.png" alt="Task 2 Screenshot">
             <img src="./imgs/52.png" alt="Task 2 Screenshot">
@@ -286,70 +326,81 @@
             <img src="./imgs/54.png" alt="Task 2 Screenshot">
         </div>
 
-        <p>The left two are nearest sampling and the right two are bilinear sampling.And the first row is the 1x sample
-            and the second row is the 16x sample.
+        <p>
+            The images on the left utilize nearest neighbor sampling, whereas those on the right employ bilinear
+            sampling. The
+            first row displays results from 1x sampling, and the second row from 16x sampling.
         </p>
         <p>
-            We can see that the bilinear
-            sampling is smoother than the nearest sampling in 1x sample. The nearest sampling has more aliasing. This is
-            because for the thin lines in the texture, the nearest sampling can only take the color of the nearest
-            pixel, which can cause the aliasing since it is likely to sample a pixel isn't on the line. The bilinear
-            sampling can take the linear interpolation of the four
-            nearest pixels, which can smooth out the texture and represent the line correctly.
+            In the 1x sampled images, bilinear sampling yields a smoother texture than nearest neighbor sampling, which
+            exhibits
+            more pronounced aliasing. This difference arises because nearest neighbor sampling selects the color of the
+            closest
+            pixel, potentially overlooking finer texture details like thin lines. Bilinear sampling, by averaging the
+            colors of
+            the four nearest pixels, can more accurately represent these details, reducing aliasing and resulting in a
+            smoother
+            appearance.
         </p>
         <p>
-            There is no significant
-            difference between the two sampling methods in 16x sample. This is because the texture is already smooth
-            enough with so many samples and the difference between the two sampling methods is not significant.
+            At 16x sampling, the distinction between the two methods becomes negligible. The increased number of samples
+            inherently smooths the texture, diminishing the impact of the sampling technique on the final image quality.
         </p>
 
     </section>
 
     <section id="task6">
         <h2>Task 6: Level Sampling</h2>
-        <p>Level sampling, often associated with Mipmapping in the context of texture mapping, can
-            improve the quality of texture mapping by using different levels of detail for different
-            distances from the camera. This can help to reduce aliasing as it can use a lower resolution
-            texture for far away objects, and a higher resolution texture for close objects.
+        <p>
+            Level sampling, integral to Mipmapping in texture mapping, enhances texture quality by adjusting the detail
+            level
+            based on the object's distance from the camera. This technique mitigates aliasing by applying
+            lower-resolution
+            textures to distant objects and higher-resolution textures to closer ones.
         </p>
 
         <h3>Speed</h3>
         <p>
-            For the two pixel sampling methods, the speed of the nearest sampling is faster than the bilinear sampling
-            for about 15%.This is because the nearest sampling only needs to take the color of the nearest pixel, while
-            the bilinear
-            sampling needs to take the linear interpolation of the four nearest pixels.
+            Comparing pixel sampling methods, nearest neighbor sampling outpaces bilinear sampling by approximately 15%.
+            This
+            speed advantage stems from nearest neighbor sampling's simplicity—only the closest pixel's color is needed,
+            as
+            opposed to bilinear sampling, which interpolates the colors of the four nearest pixels.
         </p>
         <p>
-            For level sampling, L_ZERO is faster than L_NEAREST for about 10% and 20% than L_LINEAR for my
-            implimentation. This is because
-            L_NEAREST needs to round to the nearest level, while L_LINEAR needs to take the linear interpolation of the
-            two nearest levels.
+            Among level sampling strategies, L_ZERO outperforms L_NEAREST by about 10% and L_LINEAR by roughly 20% in my
+            implementation. L_NEAREST and L_LINEAR's slower speeds are due to their additional computations—rounding to
+            the
+            nearest level and interpolating between two levels, respectively.
         </p>
         <p>
+            The number of samples per pixel significantly influences rendering speed, with increases in sample count
+            leading to
+            proportional decreases in performance. This correlation is primarily because more samples necessitate more
+            texture
+            sampling operations.
+        </p>
 
-            The number of samples per pixel has a huge impact on speed. The speed is significantly reduced when the
-            number
-            of samples per pixel increases. This is because the number of samples per pixel directly affects the number
-            of
-            times we need to sample from the texture. The rendering time is almost linear to the number of samples per
-            pixel.
-        </p>
         <h3>Memory Usage</h3>
-        <p>Pixel sampling techniques and do not significantly differ in memory usage. Level sampling requires
-            additional memory for mipmaps. While the number of samples per pixel has a direct impact on memory usage,
-            particularly for
-            framebuffer storage.</p>
+        <p>
+            Memory consumption is relatively uniform across pixel sampling techniques. However, level sampling demands
+            extra
+            memory for storing mipmaps. Additionally, the sample count per pixel directly impacts memory requirements,
+            especially for framebuffer storage.
+        </p>
 
         <h3>Antialiasing Power</h3>
-        <p>Bilinear sampling provides basic antialiasing by smoothing color transitions. L_NEAREST
-            and L_LINEAR level sampling can provide antialiasing by using different levels of detail. L_LINEAR works
-            slightly better than L_NEAREST in antialiasing in the 2D images.
-            While there is no antialiasing effect for the nearest sampling and L_ZERO level sampling.</p>
         <p>
-            The number of samples per pixel impact on antialiasing greatly. The more samples per pixel, the
-            smoother the texture and the better the antialiasing effect. But after 4x samples, the difference is not
-            significant.
+            Bilinear sampling achieves basic antialiasing by softening color transitions. L_NEAREST and L_LINEAR further
+            enhance
+            antialiasing by adapting texture detail levels, with L_LINEAR slightly outperforming L_NEAREST in smoothing
+            2D image
+            edges. In contrast, nearest neighbor sampling and L_ZERO level sampling do not contribute to antialiasing.
+        </p>
+        <p>
+            The antialiasing effect intensifies with the number of samples per pixel, leading to smoother textures.
+            However,
+            beyond 4x sampling, improvements in antialiasing become less noticeable.
         </p>
 
         <div class="img-row">
@@ -361,13 +412,23 @@
             <img src="./imgs/nl.png" alt="Task 6 Screenshot">
         </div>
         <p>
-            Here are the pictures of my cat. The top-left is L_ZERO and P_NEAREST, top-right is L_ZERO and
-            P_LINEAR, bottom-left is L_NEAREST and P_NEAREST, as well as bottom-right is L_NEAREST and P_LINEAR. You can
-            see a great
-            difference in her
-            fur. L_ZERO and P_NEAREST has no antialiasing effect, while L_ZERO and P_LINEAR looks smoother. L_NEAREST
-            and P_NEAREST messes up the fur, and L_NEAREST and P_LINEAR looks over smooth and blurry.
+            The images display varying effects on the texture of my cat's fur, attributed to different combinations of
+            level and
+            pixel sampling methods. The top-left image, using L_ZERO with P_NEAREST, shows no antialiasing effect,
+            resulting in
+            a more rugged texture. Conversely, the top-right image, combining L_ZERO with P_LINEAR, presents a smoother
+            appearance due to the linear interpolation of pixel colors.
         </p>
+        <p>
+            The bottom-left image, featuring L_NEAREST with P_NEAREST, distorts the fur texture, potentially due to the
+            mismatch
+            between the texture detail level and the sampling precision. The bottom-right image, which pairs L_NEAREST
+            with
+            P_LINEAR, exhibits an overly smoothed, somewhat blurry effect on the fur, indicating that the linear
+            interpolation
+            at this level of detail might be too aggressive, reducing the texture's natural sharpness.
+        </p>
+
     </section>
 
 </body>
