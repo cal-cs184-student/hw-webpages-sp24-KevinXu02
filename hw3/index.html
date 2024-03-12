@@ -82,37 +82,39 @@
 
 <body>
     <header>
-        https://cal-cs184-student.github.io/hw-webpages-sp24-KevinXu02/hw2/index.html
-        <h1>CS184 Homework 2</h1>
+        https://cal-cs184-student.github.io/hw-webpages-sp24-KevinXu02/hw3/index.html
+        <h1>CS184 Homework 3</h1>
     </header>
     <section id="Overview">
         <h2>Overview</h2>
         <p>
-            In this assignment, I implemented a series of geometric algorithms and operations to manipulate and refine
-            3D meshes,
-            focusing on the construction and evaluation of Bézier curves and surfaces, computing area-weighted vertex
-            normals, and
-            performing mesh editing operations like edge flips and splits. The highlight of the assignment was the
-            implementation of
-            the Loop subdivision algorithm, which significantly refines and smooths mesh surfaces by iteratively
-            updating vertex
-            positions and subdividing the mesh into finer triangles. This process involved a detailed understanding of
-            mesh
-            topology, including vertices, edges, and faces, and required careful consideration of how to maintain the
-            mesh's
-            connectivity and integrity after each operation.
+            In this project, we explored various aspects of ray tracing and global illumination to create realistic
+            rendered images.
+            We implemented ray generation, primitive intersection, and the Möller-Trumbore algorithm for efficient
+            triangle
+            intersection. To accelerate rendering, we constructed a Bounding Volume Hierarchy (BVH) to reduce
+            ray-primitive
+            intersection tests.
 
-            One interesting aspect I learned from this assignment is how geometric algorithms can be applied to create
-            smooth and
-            detailed 3D models from coarse meshes. The transformation of a simple cube into a smoother, more complex
-            shape using
-            Loop subdivision was particularly fascinating, demonstrating how repeated application of subdivision rules
-            can
-            approximate a smooth limit surface. Additionally, the edge flip and split operations underscored the
-            importance of mesh
-            topology and the need for careful updates to vertex, edge, and face references to preserve the mesh
-            structure, which is
-            crucial for 3D modeling and computer graphics applications.
+            We enhanced the realism of our images by implementing direct lighting estimation using hemisphere sampling
+            and
+            importance sampling techniques. Building upon this, we extended our renderer to support indirect lighting
+            and global
+            illumination, capturing the complex interplay of light within the scene. We also employed Russian Roulette
+            for efficient
+            ray recursion termination.
+
+            Finally, adaptive sampling is implemented to dynamically adjust the sampling rate based on local variance,
+            allocating
+            more resources to high-variance regions while reducing noise in smooth areas. This significantly improved
+            the overall
+            quality of our rendered images.
+
+            Throughout this project, we gained a deep understanding of the fundamental concepts and algorithms behind
+            path tracing
+            and global illumination, developing a robust and efficient renderer capable of producing stunning images
+            with accurate
+            lighting and shadows.
         </p>
 
     </section>
