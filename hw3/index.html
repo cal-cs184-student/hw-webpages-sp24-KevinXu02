@@ -1,7 +1,625 @@
+<!DOCTYPE html>
 <html>
-	<head>
-	</head>
-	<body>
-		Homework 3 index.html here
-	</body>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS184 Homework 2</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #007bff;
+            color: #ffffff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        section {
+            margin: 20px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #007bff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #ddd;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 10px auto;
+        }
+
+        .img-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .img-gallery img {
+            width: calc(25% - 10px);
+        }
+
+        @media screen and (max-width: 600px) {
+            .img-gallery img {
+                width: calc(50% - 10px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        https://cal-cs184-student.github.io/hw-webpages-sp24-KevinXu02/hw2/index.html
+        <h1>CS184 Homework 2</h1>
+    </header>
+    <section id="Overview">
+        <h2>Overview</h2>
+        <p>
+            In this assignment, I implemented a series of geometric algorithms and operations to manipulate and refine
+            3D meshes,
+            focusing on the construction and evaluation of Bézier curves and surfaces, computing area-weighted vertex
+            normals, and
+            performing mesh editing operations like edge flips and splits. The highlight of the assignment was the
+            implementation of
+            the Loop subdivision algorithm, which significantly refines and smooths mesh surfaces by iteratively
+            updating vertex
+            positions and subdividing the mesh into finer triangles. This process involved a detailed understanding of
+            mesh
+            topology, including vertices, edges, and faces, and required careful consideration of how to maintain the
+            mesh's
+            connectivity and integrity after each operation.
+
+            One interesting aspect I learned from this assignment is how geometric algorithms can be applied to create
+            smooth and
+            detailed 3D models from coarse meshes. The transformation of a simple cube into a smoother, more complex
+            shape using
+            Loop subdivision was particularly fascinating, demonstrating how repeated application of subdivision rules
+            can
+            approximate a smooth limit surface. Additionally, the edge flip and split operations underscored the
+            importance of mesh
+            topology and the need for careful updates to vertex, edge, and face references to preserve the mesh
+            structure, which is
+            crucial for 3D modeling and computer graphics applications.
+        </p>
+
+    </section>
+
+
+    <section id="ray-generation-primitive-intersection">
+        <h2>Part 1</h2>
+
+        <h3>Ray Generation and Primitive Intersection</h3>
+        <p>In the rendering pipeline, given a pixel in the screen space, we start by sampling by calling
+            <code>gridSampler->get_sample()</code>
+            and then calling <code>camera->generate_ray()</code> to generate a ray for each sample. We then test the
+            intersection of the ray with the scene's primitives using <code>primitive->intersect()</code>. This process
+            is
+            repeated for each pixel in the screen space, we store the intersection details in the provided
+            <code>Intersection</code> object, and use this information to shade the pixel.
+        </p>
+        </p>
+
+        <h3>Triangle Intersection Algorithm</h3>
+        <p>The triangle intersection algorithm implemented in this project is based on the Möller-Trumbore algorithm, a
+            fast
+            and efficient method for determining the intersection between a ray and a triangle in 3D space. Here's the
+            explanation:</p>
+        <ol>
+            <li>The algorithm starts by computing two edge vectors of the triangle: e1 (from vertex p1 to p2) and e2
+                (from
+                vertex p1 to p3). These vectors represent the sides of the triangle.</li>
+            <li>Next, it calculates the vector s, which is the vector from the ray's origin to the triangle's first
+                vertex
+                (p1). This vector helps determine the relative position of the ray with respect to the triangle.</li>
+            <li>The algorithm then computes two cross products: s1 (the cross product of the ray's direction and e2) and
+                s2
+                (the cross product of s and e1). These cross products are used to calculate the barycentric coordinates
+                of
+                the intersection point.</li>
+            <li>Using the dot products of s1, s, e1, and e2, the algorithm calculates the barycentric coordinates (b1,
+                b2)
+                and the distance along the ray (t) where the intersection occurs.</li>
+            <li>The algorithm checks if the barycentric coordinates (b1, b2) are within the valid range [0, 1] and if
+                their
+                sum is less than or equal to 1. It also verifies if the intersection distance (t) is within the ray's
+                valid
+                range (min_t, max_t). If all these conditions are satisfied, the ray intersects the triangle.</li>
+            <li>If an intersection is found, the algorithm updates the ray's maximum intersection distance (max_t) to
+                the
+                current intersection distance (t). This ensures that subsequent intersections along the ray will only be
+                considered if they are closer to the ray's origin.</li>
+            <li>Finally, the algorithm records the intersection details in the provided <code>Intersection</code>
+                object. It
+                sets the BSDF of the intersected primitive, the intersection distance, the intersected primitive
+                itself,
+                and the interpolated normal at the intersection point using the barycentric coordinates and the vertex
+                normals.</li>
+        </ol>
+        <p>By following these steps, the triangle intersection algorithm efficiently determines whether a ray intersects
+            a
+            triangle and provides the necessary information for shading and further processing in the rendering
+            pipeline.
+            The use of edge vectors, cross products, and barycentric coordinates allows for fast and accurate
+            intersection
+            calculations.</p>
+        <h3>Results</h3>
+        <div class="img-gallery">
+            <img src="./imgs/p1/CBempty.png" alt="Task 1 Screenshot">
+            <img src="./imgs/p1/CBspheres.png" alt="Task 1 Screenshot">
+            <img src="./imgs/p1/cow.png" alt="Task 1 Screenshot">
+        </div>
+
+
+
+    </section>
+
+    <section id="task2">
+
+        <h2>Part 2</h2>
+        <h3>BVH Construction Algorithm</h3>
+        <p>The Bounding Volume Hierarchy (BVH) construction algorithm implemented in the provided code follows a
+            top-down
+            approach to recursively build the BVH tree. </p>
+        <ol>
+            <li>The function starts by computing the bounding box (<code>bbox</code>) of the given range of primitives.
+                It
+                iterates over each primitive and expands the <code>bbox</code> to encompass the bounding box of each
+                primitive.
+            </li>
+            <li>A new <code>BVHNode</code> is created with the computed bounding box.</li>
+            <li>The function checks if the number of primitives in the range is less than or equal to
+                <code>max_leaf_size</code>. If so, it creates a leaf node by storing the <code>start</code> and
+                <code>end</code>
+                iterators in the node, representing the range of primitives it contains. The leaf node is then returned.
+            </li>
+            <li>If the number of primitives exceeds <code>max_leaf_size</code>, the function proceeds to split the
+                primitives
+                and create internal nodes.</li>
+            <li>The splitting axis is determined by finding the axis with the largest extent. The extent is calculated
+                by
+                comparing the dimensions of the bounding box along each axis (x, y, z). The axis with the largest extent
+                is
+                chosen as the splitting axis.</li>
+            <li>The split point along the chosen axis is computed as the midpoint between the minimum and maximum
+                coordinates of
+                the bounding box along that axis.</li>
+            <li>The primitives are partitioned into left and right subsets based on their centroid position relative to
+                the
+                split point. The <code>std::partition</code> function is used to rearrange the primitives such that
+                primitives
+                with centroids less than the split point are placed before the returned iterator (<code>mid</code>), and
+                primitives with centroids greater than or equal to the split point are placed after <code>mid</code>.
+            </li>
+            <li>If the partitioning results in an empty left or right subset (i.e., <code>mid</code> is equal to
+                <code>start</code> or <code>end</code>), the <code>mid</code> iterator is adjusted to split the
+                primitives
+                evenly by moving it to the middle of the range.
+            </li>
+            <li>The function recursively constructs the left and right subtrees by calling <code>construct_bvh</code> on
+                the
+                left and right subsets of primitives, respectively. The <code>mid</code> iterator is used as the
+                splitting point
+                between the left and right subtrees.</li>
+            <li>Finally, the function returns the constructed BVH node, which contains the bounding box, left and right
+                child
+                nodes (if applicable), and the range of primitives (if it is a leaf node).</li>
+        </ol>
+        <p>The heuristic chosen for picking the splitting point in this implementation is based on the axis with the
+            largest
+            extent. By selecting the axis with the widest spread of primitives, the algorithm aims to create a more
+            balanced
+            split, potentially reducing the overall depth of the BVH tree and improving the efficiency of ray-primitive
+            intersection tests.</p>
+        <div class="img-gallery">
+            <img src="./imgs/p2/blucy.png" alt="Task 2 Screenshot">
+            <img src="./imgs/p2/max.png" alt="Task 2 Screenshot">
+        </div>
+        <div class="img-gallery">
+            <img src="./imgs/p2/beasr.png" alt="Task 2 Screenshot">
+            <img src="./imgs/p2/CBbunny.png" alt="Task 2 Screenshot">
+        </div>
+        <h4>Performance Comparison</h4>
+        <p> For the cow.dae, it takes 1 minute to render the image without bvh, and 0.12s
+            with bvh. For the maxplanck.dae, it takes about 4 minute to render the image without bvh, and 0.56s with
+            bvh. And for the CBlucy.dae it takes excessive time to render the image without bvh, and 1.23s with bvh.
+        </p>
+        <p> The BVH construction greatly reduces the time to render the image, especially for the complex models. It
+            reduces the time to render the image by a factor of more than 100. Which is a significant improvement.
+        </p>
+
+    </section>
+    <section id="task3">
+        <h2>Part 3</h2>
+        <h3>Direct Lighting Estimation</h3>
+
+        <h4>Hemisphere Sampling</h4>
+
+        <p>The <code>estimate_direct_lighting_hemisphere</code> function is responsible for estimating the direct
+            lighting at a
+            given intersection point by sampling the hemisphere above the point uniformly. It starts by setting up a
+            local
+            coordinate system at the intersection point, with the Z-axis aligned with the surface normal. This makes it
+            easier
+            to work with directions in the local space.</p>
+
+        <p>Next, it determines the total number of samples to take based on the number of lights in the scene and the
+            desired
+            number of samples per area light. It then initializes the output radiance to zero and begins a loop to
+            iterate over
+            each sample.</p>
+
+        <p>For each sample, the function generates a random direction on the hemisphere using a hemisphere sampler. It
+            transforms this direction from local space to world space and creates a new ray starting from the hit point
+            in that
+            direction. The ray is then intersected with the scene using the BVH (Bounding Volume Hierarchy) to check if
+            it hits
+            any objects.</p>
+
+        <p>If the ray intersects an object, the function evaluates the BSDF at
+            the intersection point, calculates the probability density function for the solid angle, and retrieves
+            the
+            incoming radiance from the emissive property of the intersected object's BSDF. It then accumulates the
+            contribution
+            of this sample to the output radiance using the rendering equation.</p>
+
+        <p>After all the samples have been processed, the output radiance is averaged by dividing it by the total number
+            of
+            samples. Finally, the function returns the estimated direct lighting.</p>
+
+        <h4>Importance Sampling</h4>
+
+        <p>The <code>estimate_direct_lighting_importance</code> function takes a different approach to estimate the
+            direct
+            lighting at an intersection point. Instead of sampling the hemisphere uniformly, it uses importance sampling
+            to
+            focus the sampling effort on the light sources themselves.</p>
+
+        <p>Like the hemisphere sampling function, it begins by setting up a local coordinate system at the intersection
+            point
+            and initializing the output radiance to zero. However, instead of sampling the hemisphere, it iterates over
+            each
+            light in the scene.</p>
+
+        <p>For each light, the function determines the number of samples to take based on whether the light is a delta
+            light or
+            an area light. It then initializes a temporary radiance variable to store the contribution from the current
+            light.
+        </p>
+
+        <p>The function then enters a loop to process each sample for the current light. It starts by sampling the light
+            source
+            to obtain the incoming direction, distance to the light, PDF, and radiance. The incoming direction is
+            transformed
+            from world space to local space, and the BSDF is evaluated at the intersection point using the outgoing and
+            incoming
+            directions.</p>
+
+        <p>If the PDF is greater than zero and the distance to the light is positive, the function creates a shadow ray
+            starting
+            from the hit point in the direction of the light. The shadow ray is intersected with the scene using the BVH
+            to
+            check for any occluding objects. If the shadow ray doesn't intersect any objects, the contribution of this
+            sample is
+            accumulated to the temporary radiance using the rendering equation.</p>
+
+        <p>After processing all the samples for the current light, the average of the temporary radiance is added to the
+            output
+            radiance. This process is repeated for each light in the scene.</p>
+
+        <p>Finally, the output radiance is normalized by dividing it by the number of lights, and the function returns
+            the
+            estimated direct lighting.</p>
+
+        <p>By using importance sampling, the <code>estimate_direct_lighting_importance</code> function focuses the
+            sampling
+            effort on the light sources themselves, resulting in a more efficient and accurate estimation of direct
+            lighting
+            compared to hemisphere sampling.</p>
+
+        <div class="img-gallery">
+            <img src="./imgs/p3/bunny_H.png" alt="Task 3 Screenshot">
+            <img src="./imgs/p3/m1_withoutr.png" alt="Task 3 Screenshot">
+        </div>
+        <div class="img-gallery">
+            <img src="./imgs/p3/sphere_H.png" alt="Task 3 Screenshot">
+            <img src="./imgs/p3/sphere.png" alt="Task 3 Screenshot">
+        </div>
+        <h3>Bunny with 1, 4, 16, 64 light rays</h3>
+        <div class="img-gallery">
+            <img src="./imgs/p3/l1.png" alt="Task 3 Screenshot">
+            <img src="./imgs/p3/l4.png" alt="Task 3 Screenshot">
+        </div>
+        <div class="img-gallery">
+            <img src="./imgs/p3/l16.png" alt="Task 3 Screenshot">
+            <img src="./imgs/p3/l64.png" alt="Task 3 Screenshot">
+        </div>
+        <p>As the number of light rays increases, the noise in the soft shadows decreases, leading to improved shadow
+            quality. This is because more light rays provide better coverage of the light source, resulting in more
+            accurate and smoother shadowing effects. </p>
+        <h3>Results</h3>
+        <p> Uniform hemisphere sampling tends to produce noisier and less defined shadows, as it
+            does not prioritize sampling the
+            light sources directly. This approach requires a larger number of samples to converge to a clean result,
+            especially in
+            scenes with small or distant light sources.On the other hand, light sampling focuses on directly sampling
+            the light sources, resulting in cleaner and more accurate
+            soft shadows with fewer samples. By prioritizing the sampling of the light sources, light sampling captures
+            the
+            illumination more efficiently, reducing noise and improving the overall quality of the image. However, light
+            sampling
+            may miss some global illumination effects that are captured by hemisphere sampling, as it only considers
+            direct lighting
+            from the light sources
+
+        </p>
+
+    </section>
+
+    <section id="task4">
+        <h2>Part 4</h2>
+        <h3>Indirect Lighting Implementation</h3>
+        <p>The indirect lighting is implemented in the <code>at_least_one_bounce_radiance</code> function. This function
+            takes a
+            ray and an intersection as input and returns the radiance contributed by at least one bounce of indirect
+            lighting.
+        </p>
+        <p>First, the function checks if the maximum ray depth has been reached. If so, it returns a black color since
+            no more
+            bounces are allowed. Otherwise, it proceeds with the indirect lighting calculation.</p>
+        <p>At the intersection point, a local coordinate system is created, with the Z-axis aligned with the surface
+            normal. The
+            hit point is calculated by adding the ray origin and the scaled ray direction.</p>
+        <p>Next, sample the BSDF at the intersection
+            point to
+            determine the incoming light direction. Russian Roulette is used to decide
+            whether to
+            terminate the ray or continue with additional bounces.</p>
+        <p>If <code>isAccumBounces</code> is false, meaning only one bounce is considered, the function returns the
+            one-bounce
+            radiance if the ray depth is 1. Otherwise, it creates a new ray starting from the hit point in the incoming
+            direction and intersects it with the scene using the BVH. If there is an
+            intersection,
+            the function recursively calls itself with the new ray and accumulates the bounce radiance scaled by the
+            BSDF value,
+            cosine term, and probability density function (PDF).</p>
+        <p>If <code>isAccumBounces</code> is true, allowing for multiple bounces, the function initializes the output
+            radiance
+            with the one-bounce radiance. If the ray should continue based on the Russian Roulette probability and
+            maximum
+            depth, it creates a new ray, intersects it with the scene, and recursively calls itself. The bounce radiance
+            is
+            accumulated, taking into account the BSDF value, cosine term, PDF, and Russian Roulette probability.</p>
+        <p>Finally, the function returns the accumulated radiance, which represents the indirect lighting contribution
+            from one
+            or more bounces.</p>
+        <div class="img-gallery">
+            <img src="./imgs/p4/m5_r.png" alt="Task 4 Screenshot">
+            <img src="./imgs/p4/spheres_ada.png" alt="Task 4 Screenshot">
+        </div>
+        <div class="img-gallery">
+            <img src="./imgs/p4/bench_ada.png" alt="Task 4 Screenshot">
+        </div>
+        <h3>Results with only direct lighting/indirect lighting</h3>
+        <div class="img-gallery">
+            <img src="./imgs/p4/sphere.png" alt="Task 4 Screenshot">
+            <img src="./imgs/p4/sphere_indirect.png" alt="Task 4 Screenshot">
+        </div>
+        <p>Direct lighting provides the illumination from light sources, while indirect lighting captures the
+            illumination
+            that is reflected and scattered from the surfaces in the scene. Indirect lighting captures global
+            illumination effects, such as color bleeding, soft shadows, and inter-reflections, which
+            contribute
+            to the overall realism of the scene. By combining direct and indirect lighting, the rendered images exhibit
+            more
+            natural and visually appealing lighting effects, enhancing the visual quality of the scenes.</p>
+        <h3>Bunny with 0, 1, 2, 3, 4, 5 bounces without accumulation</h3>
+        <div class="img-gallery">
+            <img src="./imgs/p4/m0_noacc.png" alt="Task 4 Screenshot">
+            <img src="./imgs/p4/m1_noacc.png" alt="Task 4 Screenshot">
+        </div>
+        <div class="img-gallery">
+            <img src="./imgs/p4/m2_noacc.png" alt="Task 4 Screenshot">
+            <img src="./imgs/p4/m3_noacc.png" alt="Task 4 Screenshot">
+        </div>
+        <div class="img-gallery">
+            <img src="./imgs/p4/m4_noacc.png" alt="Task 4 Screenshot">
+            <img src="./imgs/p4/m5_noacc.png" alt="Task 4 Screenshot">
+        </div>
+        <p>
+            For the 2nd bounce, the bunny is colored with red and blue, which is the color of the walls, and the lower
+            part of it is lit up by the reflection of the floor. And the shadows
+            are colored by the reflection of the walls. Walls and floors are also lit up by 2nd bounce.
+        </p>
+        <p>For the 3rd, the generall effects for the scene are similar to the 2nd bounce, but it is dimmer. The bunny is
+            not as bright as the 2nd bounce, especially the lower part of it. The shadows are also dimmer but shaded
+            with wall colors.
+        </p>
+
+        <h3>Bunny with 0, 1, 2, 3, 4, 5 bounces</h3>
+        <div class="img-gallery">
+            <img src="./imgs/p4/m0_withoutr.png" alt="Task 4 Screenshot">
+            <img src="./imgs/p4/m1_withoutr.png" alt="Task 4 Screenshot">
+        </div>
+        <div class="img-gallery">
+            <img src="./imgs/p4/m2_withoutr.png" alt="Task 4 Screenshot">
+            <img src="./imgs/p4/m3_withoutr.png" alt="Task 4 Screenshot">
+        </div>
+        <div class="img-gallery">
+            <img src="./imgs/p4/m4_withoutr.png" alt="Task 4 Screenshot">
+            <img src="./imgs/p4/m5_withoutr.png" alt="Task 4 Screenshot">
+        </div>
+        <p>As the number of bounces increases, the images become brighter and more detailed, capturing the indirect
+            lighting
+            effects more accurately. After the 2nd bounce, the bunny is illuminated by the reflected light from the
+            walls and floor, and the
+            shadows
+            exhibit color bleeding and softening. The walls and floor are also lit up by the indirect lighting, creating
+            a more
+            realistic and visually appealing scene.</p>
+
+        </p>
+        <h3>Bunny with 0, 1, 2, 3, 4, 100 bounces with Russian Roulette</h3>
+        <div class="img-gallery">
+            <img src="./imgs/p4/m0_r.png" alt="Task 4 Screenshot">
+            <img src="./imgs/p4/m1_r.png" alt="Task 4 Screenshot">
+        </div>
+        <div class="img-gallery">
+            <img src="./imgs/p4/m2_r.png" alt="Task 4 Screenshot">
+            <img src="./imgs/p4/m3_r.png" alt="Task 4 Screenshot">
+        </div>
+        <div class="img-gallery">
+            <img src="./imgs/p4/m4_r.png" alt="Task 4 Screenshot">
+            <img src="./imgs/p4/m5_r.png" alt="Task 4 Screenshot">
+        </div>
+        <p>The result is almost the same as the one without Russian Roulette, but
+            it is more efficient, and be capable of rendering more bounces in the same amount of time.
+        </p>
+
+        </p>
+        <h3>Rendered views with sample-per-pixel rates of 1, 2, 4, 16, 64, 1024</h3>
+        <div class="img-gallery">
+            <img src="./imgs/p4/s1.png" alt="Task 4 Screenshot">
+            <img src="./imgs/p4/s2.png" alt="Task 4 Screenshot">
+        </div>
+        <div class="img-gallery">
+            <img src="./imgs/p4/s4.png" alt="Task 4 Screenshot">
+            <img src="./imgs/p4/s8.png" alt="Task 4 Screenshot">
+        </div>
+        <div class="img-gallery">
+            <img src="./imgs/p4/s16.png" alt="Task 4 Screenshot">
+            <img src="./imgs/p4/s64.png" alt="Task 4 Screenshot">
+        </div>
+        <div class="img-gallery">
+            <img src="./imgs/p4/m4_withoutr.png" alt="Task 4 Screenshot">
+        </div>
+        <p>
+            With the growth of the sample-per-pixel rate, the image becomes clearer and more detailed. The noise in the
+            image decreases. The image converges to a clean result as the sample-per-pixel rate increases. And when rate
+            reaches 1024, the image is almost noiseless.
+        </p>
+
+    </section>
+
+    <section id="task5">
+        <h2>Part 5</h2>
+        <h3>Adaptive Sampling</h3>
+
+        <p>Adaptive sampling dynamically adjusts the number of samples per pixel based on the variance of the pixel's
+            color. It
+            allocates more samples to regions with high variance, such as edges, textures, or complex shading, while
+            using fewer
+            samples in regions with low variance, like smooth surfaces or uniform colors. This approach helps reduce
+            noise and
+            improve the overall quality of the rendered image while optimizing the rendering time.</p>
+
+        <p>Here's the walkthrough of the implementation of adaptive sampling:</p>
+
+        <p>The code starts by setting up some variables: <code>origin</code> for the pixel coordinates (x, y),
+            <code>pixel_color</code> for the accumulated color of the pixel (initially black), <code>s1</code> and
+            <code>s2</code> for computing the mean and variance of the pixel color (also initialized to black), and
+            <code>num_samples</code> to keep track of the number of samples taken for the current pixel (starting at 0).
+        </p>
+
+        <p>It then enters a loop to sample the pixel until a termination condition is met. In each iteration, it
+            generates a
+            random sample position within the pixel using <code>gridSampler-&gt;get_sample()</code>, creates a ray
+            (<code>r</code>) using the camera's <code>generate_ray</code> function with the normalized sample position,
+            sets the
+            ray's depth to <code>max_ray_depth</code>, and estimates the radiance for the ray using the
+            <code>est_radiance_global_illumination</code> function, storing the result in <code>sample_color</code>.
+        </p>
+
+        <p>The <code>num_samples</code> counter is incremented, and <code>sample_color</code> is accumulated in
+            <code>s1</code>
+            and the squared <code>sample_color</code> in <code>s2</code> for computing the mean and variance.
+        </p>
+
+        <p>If the number of samples taken is a multiple of <code>samplesPerBatch</code>, the code calculates the mean
+            color by
+            dividing <code>s1</code> by <code>num_samples</code>, computes the variance using the formula
+            <code>(s2 - (s1 * s1) / num_samples) / (num_samples - 1)</code>, and calculates the confidence interval
+            <code>I</code> using <code>1.96 * sqrt(variance.illum() / num_samples)</code>.
+        </p>
+
+        <p>The termination condition is then checked: if the confidence interval <code>I</code> is less than or equal to
+            the
+            product of <code>maxTolerance</code> and the mean color's luminance (<code>mean.illum()</code>), or if the
+            number of
+            samples taken (<code>num_samples</code>) is greater than or equal to the maximum number of samples per pixel
+            (<code>ns_aa</code>), the loop is terminated, and the <code>pixel_color</code> is set to the mean color.
+            Otherwise,
+            the <code>pixel_color</code> is updated with the current mean color, and the loop continues.</p>
+
+        <p>After the loop ends, the <code>sampleBuffer</code> is updated with the final <code>pixel_color</code> at the
+            corresponding pixel coordinates (x, y), and the number of samples taken for the pixel is stored in the
+            <code>sampleCountBuffer</code> at the corresponding index.
+        </p>
+
+        <p>By adaptively allocating more samples to regions with high variance and fewer samples to regions with low
+            variance,
+            adaptive sampling reduces noise and enhances the
+            overall
+            quality of the rendered image while keeping the rendering time under control. It's a smart way to focus the
+            computational power on areas that need more samples to achieve an acceptable level of noise.</p>
+
+        <div class="img-gallery">
+            <img src="./imgs/p5/bench_ada.png" alt="Task 5 Screenshot">
+            <img src="./imgs/p5/bench_ada_rate.png" alt="Task 5 Screenshot">
+        </div>
+        <div class="img-gallery">
+            <img src="./imgs/p5/bunny_ada.png" alt="Task 5 Screenshot">
+            <img src="./imgs/p5/bunny_ada_rate.png" alt="Task 5 Screenshot">
+        </div>
+        <div class="img-gallery">
+            <img src="./imgs/p5/spheres_ada.png" alt="Task 5 Screenshot">
+            <img src="./imgs/p5/spheres_ada.png" alt="Task 5 Screenshot">
+        </div>
+
+        <p>
+            Notice that in the corner of the sphere, there is completely black pixels, which might because with a
+            relative small batch size these pixels are not sampled enough with a low variance, and the algorithm
+            terminates the sampling process.
+            This can be fixed by increasing the batch size, which allows the algorithm to sample more in the low
+            variance.
+        </p>
+
+
+    </section>
+
+
+</body>
+
 </html>
