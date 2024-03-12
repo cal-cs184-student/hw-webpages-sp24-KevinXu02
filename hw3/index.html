@@ -95,7 +95,8 @@
             intersection. To accelerate rendering, we constructed a Bounding Volume Hierarchy (BVH) to reduce
             ray-primitive
             intersection tests.
-
+        </p>
+        <p>
             We enhanced the realism of our images by implementing direct lighting estimation using hemisphere sampling
             and
             importance sampling techniques. Building upon this, we extended our renderer to support indirect lighting
@@ -103,13 +104,15 @@
             illumination, capturing the complex interplay of light within the scene. We also employed Russian Roulette
             for efficient
             ray recursion termination.
-
+        </p>
+        <p>
             Finally, adaptive sampling is implemented to dynamically adjust the sampling rate based on local variance,
             allocating
             more resources to high-variance regions while reducing noise in smooth areas. This significantly improved
             the overall
             quality of our rendered images.
-
+        </p>
+        <p>
             Throughout this project, we gained a deep understanding of the fundamental concepts and algorithms behind
             path tracing
             and global illumination, developing a robust and efficient renderer capable of producing stunning images
@@ -257,8 +260,7 @@
         <p> For the cow.dae, it takes 1 minute to render the image without bvh, and 0.12s
             with bvh. For the maxplanck.dae, it takes about 4 minute to render the image without bvh, and 0.56s with
             bvh. And for the CBlucy.dae it takes excessive time to render the image without bvh, and 1.23s with bvh.
-        </p>
-        <p> The BVH construction greatly reduces the time to render the image, especially for the complex models. It
+            The BVH construction greatly reduces the time to render the image, especially for the complex models. It
             reduces the time to render the image by a factor of more than 100. Which is a significant improvement.
         </p>
 
@@ -607,11 +609,11 @@
         </div>
         <div class="img-gallery">
             <img src="./imgs/p5/spheres_ada.png" alt="Task 5 Screenshot">
-            <img src="./imgs/p5/spheres_ada.png" alt="Task 5 Screenshot">
+            <img src="./imgs/p5/spheres_ada_rate.png" alt="Task 5 Screenshot">
         </div>
 
         <p>
-            Notice that in the corner of the sphere, there is completely black pixels, which might because with a
+            Notice that in the corner of the sphere, there are completely black pixels, which might because with a
             relative small batch size these pixels are not sampled enough with a low variance, and the algorithm
             terminates the sampling process.
             This can be fixed by increasing the batch size, which allows the algorithm to sample more in the low
